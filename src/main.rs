@@ -1,7 +1,8 @@
 #![allow(unused_imports)]
-use std::net::TcpListener;
+use std::{io::Write, net::TcpListener};
 
-fn main() {
+const CORRELATION_ID: u8 = 7u8;
+fn main() -> anyhow::Result<()> {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     println!("Logs from your program will appear here!");
 
@@ -11,7 +12,8 @@ fn main() {
 
     for stream in listener.incoming() {
         match stream {
-            Ok(_stream) => {
+            Ok(mut stream) => {
+                stream.write(&[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07])?;
                 println!("accepted new connection");
             }
             Err(e) => {
@@ -19,4 +21,5 @@ fn main() {
             }
         }
     }
+    Ok(())
 }
