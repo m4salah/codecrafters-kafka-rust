@@ -67,9 +67,7 @@ fn main() -> anyhow::Result<()> {
         match stream {
             Ok(stream) => {
                 println!("accepted new connection");
-                thread::spawn(|| {
-                    handle_conn(stream).unwrap();
-                });
+                thread::spawn(|| -> anyhow::Result<()> { handle_conn(stream) });
             }
             Err(e) => {
                 println!("error: {}", e);
