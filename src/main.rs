@@ -19,7 +19,7 @@ fn handle_conn(mut stream: TcpStream) -> anyhow::Result<()> {
         let mut response: Vec<u8> = vec![];
 
         // message size
-        response.extend_from_slice(&19u32.to_be_bytes());
+        response.extend_from_slice(&0u32.to_be_bytes());
 
         // correlation id
         response.extend_from_slice(correlation_id);
@@ -32,7 +32,7 @@ fn handle_conn(mut stream: TcpStream) -> anyhow::Result<()> {
         response.extend_from_slice(&[0, 0]);
 
         // api keys
-        response.extend_from_slice(&[0x02]);
+        response.extend_from_slice(&[0x03]);
 
         // api key
         response.extend_from_slice(request_api_key);
@@ -46,11 +46,27 @@ fn handle_conn(mut stream: TcpStream) -> anyhow::Result<()> {
         // TAG_BUFFER
         response.extend_from_slice(&[0]);
 
+        // api key
+        response.extend_from_slice(&75u16.to_be_bytes());
+
+        // min version
+        response.extend_from_slice(&[0, 0]);
+
+        // max version
+        response.extend_from_slice(&[0, 0]);
+
+        // TAG_BUFFER
+        response.extend_from_slice(&[0]);
+
         // throttle_time_ms
         response.extend_from_slice(&[0, 0, 0, 0]);
 
         // TAG_BUFFER
         response.extend_from_slice(&[0]);
+
+        // Update message size
+        let size = (response.len() - 4) as u32;
+        response[0..4].copy_from_slice(&size.to_be_bytes());
 
         stream.write_all(&response)?;
     }
